@@ -4,3 +4,50 @@ hello
 hii how are you
 
 yohamalar
+
+public Branch getBranchByFacultyCount(int facultyCount) throws BranchNotFoundException {
+    Optional<Branch> branch = branchRepo.findByFacultyCount(facultyCount);
+    
+    if (branch.isPresent()) {
+        return branch.get();
+    } else {
+        throw new BranchNotFoundException("No branch found with faculty count " + facultyCount);
+    }
+}
+
+
+@GetMapping("/branches/facultycount/{facultyCount}")
+public ResponseEntity<Branch> getBranchByFacultyCount(@PathVariable int facultyCount) {
+    try {
+        Branch branch = branchService.getBranchByFacultyCount(facultyCount);
+        return new ResponseEntity<>(branch, HttpStatus.OK);
+    } catch (BranchNotFoundException ex) {
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+}
+
+
+public Branch getBranchByFacultyCount(int facultyCount) {
+    return branchRepo.findByFacultyCount(facultyCount)
+            .orElse(null);  // Return null or some default value if not found
+}
+
+@GetMapping("/branches/facultycount/{facultyCount}")
+public ResponseEntity<Branch> getBranchByFacultyCount(@PathVariable int facultyCount) {
+    Branch branch = branchService.getBranchByFacultyCount(facultyCount);
+    if (branch == null) {
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);  // Return 404 if not found
+    }
+    return new ResponseEntity<>(branch, HttpStatus.OK);
+}
+
+
+Throw an exception: If the business requirement mandates that the branch with exactly 35 faculty members should exist, throw a BranchNotFoundException or another custom exception when it's not found.
+Return an empty response: If the business logic allows for not finding a branch with 35 faculty members, return an empty response (e.g., null or an empty list) with an appropriate HTTP status code (404 Not Found or 204 No Content)
+
+
+Springboot Roadmap
+controller
+repository
+service
+
